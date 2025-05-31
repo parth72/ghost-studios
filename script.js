@@ -24,13 +24,26 @@ const status = document.getElementById('form-status');
 
 form.addEventListener('submit', e => {
   e.preventDefault();
-  fetch(scriptURL, {
-    method: 'POST',
-    body: new FormData(form)
+
+  // Build URLSearchParams from form data
+  const formData = new FormData(form);
+  const params = new URLSearchParams();
+
+  for (const pair of formData.entries()) {
+    params.append(pair[0], pair[1]);
+  }
+
+  fetch(`${scriptURL}?${params.toString()}`, {
+    method: 'GET',  // Use GET to avoid CORS issues
   })
-  .then(response => {
-    status.innerHTML = "Message sent successfully!";
-    form.reset();
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === "success") {
+      status.innerHTML = "Message sent successfully!";
+      form.reset();
+    } else {
+      status.innerHTML = `Error: ${data.message}`;
+    }
   })
   .catch(error => {
     console.error('Error!', error.message);
