@@ -53,21 +53,20 @@
   <section id="contact" class="contact">
     <div class="section-box">
       <h2>Contact Us</h2>
-      <form id="contact-form">
-      <input type="text" name="name" placeholder="Your Name" required />
-      <input type="email" name="email" placeholder="Your Email" required />
-      <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
-      <button type="submit">Send</button>
+      <!-- 👇 Replace action URL and entry.xxxx values -->
+      <form action="https://docs.google.com/forms/d/e/1FAIpQLScX1IvToqf8wT7rH_QaECgXJq2cLxpAL0sKsgyHuEe9rpBtYA/formResponse" method="POST" target="hidden_iframe" onsubmit="submitted=true;">
+        <input name="entry.X_NAME" type="text" placeholder="Your Name" required />
+        <input name="entry.X_EMAIL" type="email" placeholder="Your Email" required />
+        <textarea name="entry.X_MSG" placeholder="Your Message" rows="5" required></textarea>
+        <button type="submit">Send</button>
       </form>
-    <div id="form-status"></div>
+      <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+      <div id="form-status"></div>
     </div>
   </section>
 
-  <a
-    href="https://wa.me/9896900679?text=Hi%20Ghost%20Studios!%20I%20am%20interested%20in%20your%20work!"
-    target="_blank"
-    class="whatsapp-button"
-  >
+  <a href="https://wa.me/9896900679?text=Hi%20Ghost%20Studios!%20I%20am%20interested%20in%20your%20work!"
+     target="_blank" class="whatsapp-button">
     💬 WhatsApp Us
   </a>
 
@@ -75,6 +74,39 @@
     &copy; 2025 Ghost Studios. All Rights Reserved.
   </footer>
 
-  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const loader = document.querySelector('.page-loader');
+      setTimeout(() => loader.classList.add('hide'), 800);
+
+      const animated = document.querySelectorAll('.animate');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('show');
+          }
+        });
+      }, { threshold: 0.2 });
+
+      animated.forEach(el => observer.observe(el));
+    });
+
+    function toggleMode() {
+      document.body.classList.toggle('light-mode');
+    }
+
+    // Show form success message
+    let submitted = false;
+    window.onload = function () {
+      const iframe = document.getElementById('hidden_iframe');
+      iframe.onload = function () {
+        if (submitted) {
+          document.getElementById('form-status').innerText = "Message sent successfully!";
+          document.querySelector('form').reset();
+          submitted = false;
+        }
+      };
+    };
+  </script>
 </body>
 </html>
