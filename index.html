@@ -53,14 +53,12 @@
   <section id="contact" class="contact">
     <div class="section-box">
       <h2>Contact Us</h2>
-      <!-- 👇 Replace action URL and entry.xxxx values -->
-      <form action="https://docs.google.com/forms/d/e/1FAIpQLScX1IvToqf8wT7rH_QaECgXJq2cLxpAL0sKsgyHuEe9rpBtYA/formResponse" method="POST" target="hidden_iframe" onsubmit="submitted=true;">
-        <input name="entry.455117541" type="text" placeholder="Your Name" required />
-        <input name="entry.1443599939" type="email" placeholder="Your Email" required />
-        <textarea name="entry.2008676543" placeholder="Your Message" rows="5" required></textarea>
+      <form id="contact-form">
+        <input name="name" type="text" placeholder="Your Name" required />
+        <input name="email" type="email" placeholder="Your Email" required />
+        <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
         <button type="submit">Send</button>
       </form>
-      <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
       <div id="form-status"></div>
     </div>
   </section>
@@ -75,6 +73,7 @@
   </footer>
 
   <script>
+    // Loader & animations
     document.addEventListener('DOMContentLoaded', () => {
       const loader = document.querySelector('.page-loader');
       setTimeout(() => loader.classList.add('hide'), 800);
@@ -95,18 +94,35 @@
       document.body.classList.toggle('light-mode');
     }
 
-    // Show form success message
-    let submitted = false;
-    window.onload = function () {
-      const iframe = document.getElementById('hidden_iframe');
-      iframe.onload = function () {
-        if (submitted) {
-          document.getElementById('form-status').innerText = "Message sent successfully!";
-          document.querySelector('form').reset();
-          submitted = false;
-        }
-      };
-    };
+    // Contact form submission to Google Apps Script
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbw9qIiIlEMZc8lWUObzI9IyZWsNiB17fz4SmZVJLhVma6THfBMvwUKY-SyrnGnA1qi2dA/exec';
+    const form = document.getElementById('contact-form');
+    const status = document.getElementById('form-status');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      status.innerText = "Sending...";
+
+      const formData = new FormData(form);
+      const params = new URLSearchParams();
+
+      for (const [key, value] of formData.entries()) {
+        params.append(key, value);
+      }
+
+      fetch(`${scriptURL}?${params.toString()}`, {
+        method: 'GET' // GET for simplicity, can also use POST if your Apps Script is set up for it
+      })
+      .then(res => res.text())
+      .then(response => {
+        status.innerText = "Message sent successfully!";
+        form.reset();
+      })
+      .catch(error => {
+        console.error('Error!', error.message);
+        status.innerText = "Failed to send message.";
+      });
+    });
   </script>
 </body>
 </html>
