@@ -72,63 +72,53 @@
     &copy; 2025 Ghost Studios. All Rights Reserved.
   </footer>
 
-  <script>
-    // Loader & animations
-    document.addEventListener('DOMContentLoaded', () => {
-      const loader = document.querySelector('.page-loader');
-      setTimeout(() => loader.classList.add('hide'), 800);
+<script>
+  // Loader & animations
+  document.addEventListener('DOMContentLoaded', () => {
+    const loader = document.querySelector('.page-loader');
+    setTimeout(() => loader.classList.add('hide'), 800);
 
-      const animated = document.querySelectorAll('.animate');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('show');
-          }
-        });
-      }, { threshold: 0.2 });
-
-      animated.forEach(el => observer.observe(el));
-    });
-
-    function toggleMode() {
-      document.body.classList.toggle('light-mode');
-    }
-
-    // Contact form submission to Google Apps Script
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbw9qIiIlEMZc8lWUObzI9IyZWsNiB17fz4SmZVJLhVma6THfBMvwUKY-SyrnGnA1qi2dA/exec';
-    const form = document.getElementById('contact-form');
-    const status = document.getElementById('form-status');
-
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      status.innerText = "Sending...";
-
-      const formData = new FormData(form);
-
-      fetch(scriptURL, {
-        method: 'POST',
-        body: formData,
-      })
-      .then(res => res.text()) // get raw response text
-      .then(text => {
-        try {
-          const data = JSON.parse(text);
-          if (data.status === "success") {
-            status.innerText = "Message sent successfully!";
-            form.reset();
-          } else {
-            status.innerText = `Error: ${data.message}`;
-          }
-        } catch (err) {
-          status.innerText = "Failed to parse server response.";
-          console.error("Parsing error:", err, "Response:", text);
+    const animated = document.querySelectorAll('.animate');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show');
         }
-      })
-      .catch(error => {
-        console.error('Fetch error:', error);
-        status.innerText = "Failed to send message.";
       });
+    }, { threshold: 0.2 });
+
+    animated.forEach(el => observer.observe(el));
+  });
+
+  function toggleMode() {
+    document.body.classList.toggle('light-mode');
+  }
+
+  // Contact form submission to Google Apps Script (simplified)
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbw9qIiIlEMZc8lWUObzI9IyZWsNiB17fz4SmZVJLhVma6THfBMvwUKY-SyrnGnA1qi2dA/exec';
+  const form = document.getElementById('contact-form');
+  const status = document.getElementById('form-status');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    status.innerText = "Sending...";
+
+    const formData = new FormData(form);
+
+    fetch(scriptURL, {
+      method: 'POST',
+      body: formData,
+    })
+    .then(() => {
+      status.innerText = "Message sent!";
+      form.reset();
+    })
+    .catch(error => {
+      console.error('Fetch error:', error);
+      status.innerText = "Failed to send message.";
     });
-  </script>
+  });
+</script>
+
 </body>
 </html>
