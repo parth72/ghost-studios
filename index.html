@@ -104,22 +104,28 @@
       status.innerText = "Sending...";
 
       const formData = new FormData(form);
-      const params = new URLSearchParams();
 
-      for (const [key, value] of formData.entries()) {
-        params.append(key, value);
-      }
-
-      fetch(`${scriptURL}?${params.toString()}`, {
-        method: 'GET' // GET for simplicity, can also use POST if your Apps Script is set up for it
+      fetch(scriptURL, {
+        method: 'POST',
+        body: formData,
       })
-      .then(res => res.text())
-      .then(response => {
-        status.innerText = "Message sent successfully!";
-        form.reset();
+      .then(res => res.text()) // get raw response text
+      .then(text => {
+        try {
+          const data = JSON.parse(text);
+          if (data.status === "success") {
+            status.innerText = "Message sent successfully!";
+            form.reset();
+          } else {
+            status.innerText = `Error: ${data.message}`;
+          }
+        } catch (err) {
+          status.innerText = "Failed to parse server response.";
+          console.error("Parsing error:", err, "Response:", text);
+        }
       })
       .catch(error => {
-        console.error('Error!', error.message);
+        console.error('Fetch error:', error);
         status.innerText = "Failed to send message.";
       });
     });
